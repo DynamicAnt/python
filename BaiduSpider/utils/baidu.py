@@ -18,7 +18,7 @@ class BaiduSpider:
         command = self.keyword
         search = [('wd', command), ('pn', self.page_index)]
         self.searchUrl = self.prefix + "?" + urllib.parse.urlencode(search)
-        print("searchUrl:%s" %(self.searchUrl))
+        print("searchUrl:%s" % self.searchUrl)
         
     def getPageContent(self):
         self.createUrl()
@@ -37,38 +37,33 @@ class Analyzer:
     def __init__(self):
         pass
 
-    def get_result(self, page,limit):
+    def get_result(self, page, index, limit):
         soup = BeautifulSoup(page, "html.parser")
-        # https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all-next-and-find-next
-        # https://stackoverflow.com/questions/33654837/does-beautifulsoup-find-all-preserve-tag-order
-        # find_next_sibling
-        # from bs4 import BeautifulSoup
-        # soup = BeautifulSoup(open('./mytable.html'), 'html.parser')
-        # row = soup.find('tr', {'class': 'something', 'someattr': 'somevalue'})
-        # myvalues = []
-        # while True:
-        #     cell = row.find('td', {'someattr': 'cellspecificvalue'})
-        #     myvalues.append(cell.get_text())
-        #     row = row.find_next_sibling('tr', {'class': 'something', 'someattr': 'somevalue'})
-        #     if not row:
-        #         break
-        tagh3 = soup.find_all_next('h3')
-        print("tagh3:"+str(tagh3))
-        links = soup.find_all_next('a', {'class': 'c-showurl'})
-        i = 0
+        divs = soup.find_all('div', {'class': 'c-container'})
+        i = 1
         result = LinkInfo.SearchResult()
-        for link in links:
+        for div in divs:
+            link = div.find('a', {'class': 'c-showurl'})
+            if not link:
+                link = div.find('span', {'class': 'c-showurl'})
+            # print('link:'+str(link))
+            if not link:
+                i = i + 1
+                continue
             href = link.get_text()
-            print("href:%s index:%d" % (href, i))
+            # print("href:%s index:%d" % (href, i))
             if href.find('cn.made-') != -1:
                 # print("href:%s index:%d" % (href, i))
-                h3 = tagh3[i]
+                h3 = div.find('h3')
                 url = h3.find('a').get('href')
                 text = h3.get_text()
+                print('link:' + str(link))
+                print("href:%s index:%d" % (href, index+i))
+                print("h3:%s index:%d" % (text, index+i))
                 res = requests.get(url=url)
                 # 得到网页原始地址
                 url = res.request.url
-                link_item = LinkInfo.LinkItem(url, text, username='a', ranking=1)
+                link_item = LinkInfo.LinkItem(url, text, username='a', ranking=index+i)
                 result.append(link_item)
             i = i + 1
         is_continue = self.is_continue_loop(soup, limit)

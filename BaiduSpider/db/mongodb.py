@@ -9,16 +9,21 @@ collection = db.keyword_lib
 class DB:
     @staticmethod
     def filter(words):
-        result = collection.find({"word": {"$in": words}})
+        word_list = []
+        for element in words:
+            if element not in word_list:
+                word_list.append(element)
+        result = collection.find({"word": {"$in": word_list}})
         for post in result:
             # print(post['word'])
-            while post['word'] in words:
-                words.remove(post['word'])
-        return words
+            while post['word'] in word_list:
+                word_list.remove(post['word'])
+        return word_list
 
     def insert(self, words):
+        # print("before filter words:"+str(words))
         words = self.filter(words)
-        # print("words:"+str(words))
+        # print("after filter words:"+str(words))
         if len(words) > 0:
             data_list = []
             for word in words:
@@ -28,4 +33,13 @@ class DB:
                     "add_time": datetime.datetime.utcnow()
                 })
             collection.insert_many(data_list)
+
+    @staticmethod
+    def find(word):
+        result = collection.find({"word": word})
+        for rst in result:
+            pprint(rst)
+
+
+# DB.find("剪叉式液压升降机")
 

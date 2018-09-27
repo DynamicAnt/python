@@ -34,11 +34,11 @@ startTime = time.clock()
 ## 9818
 total = ExcelUtil.get_excel_row_num("2018年到期客户拆词.xlsx") + 1
 db_tool = mongodb.DB()
-offset = 5
-start = 682
-## 692
+offset = 20
+start = 2
+## 9818
 end = start + offset
-while end <= total:
+while (end <= total) and (start != end):
     db_startTime = time.clock()
     words = ExcelUtil.read_from_excel("2018年到期客户拆词.xlsx", start, end)
     db_tool.insert(words)

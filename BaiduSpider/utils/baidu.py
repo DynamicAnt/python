@@ -39,6 +39,12 @@ class Analyzer:
 
     def get_result(self, page, index, limit):
         soup = BeautifulSoup(page, "html.parser")
+        # if index == 20:
+        #     print("\n")
+        #     print("\n")
+        #     print("soup:"+str(soup))
+        #     print("\n")
+        #     print("\n")
         divs = soup.find_all('div', {'class': 'c-container'})
         i = 1
         result = LinkInfo.SearchResult()

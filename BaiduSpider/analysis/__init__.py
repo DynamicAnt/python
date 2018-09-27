@@ -1,8 +1,8 @@
 from utils import baidu
 from domain import LinkInfo
 
-# keyword = "山东淄泵泵业有限公司"
-keyword = "个人用户(树中小鬼)"
+keyword = "山东淄泵泵业有限公司"
+# keyword = "个人用户(树中小鬼)"
 spider = baidu.BaiduSpider()
 spider.setKeyword(keyword)
 

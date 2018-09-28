@@ -16,27 +16,34 @@ class ExcelUtil:
 
     @staticmethod
     def read_from_excel(filename, start, end):
+        excel_start_time = time.clock()
         wb = openpyxl.load_workbook(filename=filename, read_only=True)
         ws = wb.active
         data = []
         for i in range(start, end):
             for j in range(12, 15):
                 cell = ws.cell(row=i, column=j)
-                if not cell.value:
+                value = cell.value
+                if not value:
                     break
                 else:
+                    # if cell.value not in data:
                     data.append(cell.value)
-        # print("关键词读取成功！")
+        excel_end_time = time.clock()
+        print("excel耗时：%f s" % (excel_end_time - excel_start_time))
+        set_start_time = time.clock()
+        temp = set(data)
+        data = list(temp)
+        set_end_time = time.clock()
+        print("set耗时：%f s" % (set_end_time - set_start_time))
         return data
 
 
 startTime = time.clock()
-## 9818
 total = ExcelUtil.get_excel_row_num("2018年到期客户拆词.xlsx") + 1
 db_tool = mongodb.DB()
-offset = 20
-start = 2
-## 9818
+offset = 100
+start = 2002
 end = start + offset
 while (end <= total) and (start != end):
     db_startTime = time.clock()

@@ -63,14 +63,21 @@ class Analyzer:
                 h3 = div.find('h3')
                 url = h3.find('a').get('href')
                 text = h3.get_text()
-                print('link:' + str(link))
-                print("href:%s index:%d" % (href, index+i))
-                print("h3:%s index:%d" % (text, index+i))
+                # print('link:' + str(link))
+                # print("href:%s index:%d" % (href, index+i))
+                # print("h3:%s index:%d" % (text, index+i))
                 res = requests.get(url=url)
                 # 得到网页原始地址
                 url = res.request.url
-                link_item = LinkInfo.LinkItem(url, text, username='a', ranking=index+i)
-                result.append(link_item)
+                link_item = LinkInfo.LinkItem(url, text, (index + i))
+
+                target_page = res.content
+                soup1 = BeautifulSoup(target_page, "html.parser")
+                info = soup1.find('div', {'id': 'hidden_remote_user_info'})
+                attrs = info.attrs
+                result.append(attrs, link_item)
+                result.num = result.num + 1
+
             i = i + 1
         is_continue = self.is_continue_loop(soup, limit)
         return result, is_continue

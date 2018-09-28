@@ -270,9 +270,9 @@ class BaiduSpider():
     
     def createUrl(self):
         command = "site:cn.made-in-china.com inurl:"+self.keyword
-        search = [('wd',command),('pn',self.pageIndex)]
+        search = [('wd', command), ('pn', self.pageIndex)]
         self.searchUrl = self.prefix + "?" + urllib.parse.urlencode(search)
-        print("searchUrl:%s" %(self.searchUrl))
+        # print("searchUrl:%s" %(self.searchUrl))
     
     def getPageContent(self):
         self.createUrl()

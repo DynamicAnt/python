@@ -18,7 +18,7 @@ class BaiduSpider:
         command = self.keyword
         search = [('wd', command), ('pn', self.page_index)]
         self.searchUrl = self.prefix + "?" + urllib.parse.urlencode(search)
-        print("searchUrl:%s" % self.searchUrl)
+        # print("searchUrl:%s" % self.searchUrl)
         
     def getPageContent(self):
         self.createUrl()
@@ -39,33 +39,21 @@ class Analyzer:
 
     def get_result(self, page, index, limit):
         soup = BeautifulSoup(page, "html.parser")
-        # if index == 20:
-        #     print("\n")
-        #     print("\n")
-        #     print("soup:"+str(soup))
-        #     print("\n")
-        #     print("\n")
         divs = soup.find_all('div', {'class': 'c-container'})
         i = 1
-        result = LinkInfo.SearchResult()
+        search_result = LinkInfo.SearchResult()
         for div in divs:
             link = div.find('a', {'class': 'c-showurl'})
             if not link:
                 link = div.find('span', {'class': 'c-showurl'})
-            # print('link:'+str(link))
             if not link:
                 i = i + 1
                 continue
             href = link.get_text()
-            # print("href:%s index:%d" % (href, i))
             if href.find('cn.made-') != -1:
-                # print("href:%s index:%d" % (href, i))
                 h3 = div.find('h3')
                 url = h3.find('a').get('href')
                 text = h3.get_text()
-                # print('link:' + str(link))
-                # print("href:%s index:%d" % (href, index+i))
-                # print("h3:%s index:%d" % (text, index+i))
                 res = requests.get(url=url)
                 # 得到网页原始地址
                 url = res.request.url
@@ -75,12 +63,12 @@ class Analyzer:
                 soup1 = BeautifulSoup(target_page, "html.parser")
                 info = soup1.find('div', {'id': 'hidden_remote_user_info'})
                 attrs = info.attrs
-                result.append(attrs, link_item)
-                result.num = result.num + 1
+                search_result.append(attrs, link_item)
+                search_result.num = search_result.num + 1
 
             i = i + 1
         is_continue = self.is_continue_loop(soup, limit)
-        return result, is_continue
+        return search_result, is_continue
 
     @staticmethod
     def is_continue_loop(content, limit=5):

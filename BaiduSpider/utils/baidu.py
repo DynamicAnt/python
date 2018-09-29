@@ -2,7 +2,6 @@ import urllib
 import requests 
 from bs4 import BeautifulSoup
 from domain import LinkInfo
-import re
 
 
 class BaiduSpider:
@@ -11,7 +10,7 @@ class BaiduSpider:
         self.page_index = page_index
         self.searchUrl = ""
         self.pageContent = ""
-        self.prefix = "http://www.baidu.com/s"
+        self.prefix = "https://www.baidu.com/s"
         pass
     
     def createUrl(self):
@@ -22,8 +21,14 @@ class BaiduSpider:
         
     def getPageContent(self):
         self.createUrl()
-        response = requests.get(url=self.searchUrl)
-        self.pageContent = response.content
+
+        # response = requests.get(url=self.searchUrl)
+        # self.pageContent = response.content
+
+        page = urllib.request.urlopen(self.searchUrl)
+        html = page.read()
+        self.pageContent = html.decode('utf-8')
+
         return self.pageContent
     
     def setPageIndex(self, page_index):
@@ -72,6 +77,9 @@ class Analyzer:
 
     def get_result_arr(self, keyword, page, index, limit):
         soup = BeautifulSoup(page, "html.parser")
+        print('\n')
+        print(str(soup))
+        print('\n')
         divs = soup.find_all('div', {'class': 'c-container'})
         div_i = 1
         search_result = []

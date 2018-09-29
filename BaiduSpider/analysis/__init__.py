@@ -5,7 +5,9 @@ import math
 import queue
 import threading
 import contextlib
+import ssl
 
+ssl._create_default_https_context = ssl._create_unverified_context
 db_tool = mongodb.DB()
 word_count = db_tool.get_total_num()
 analyzer = baidu.Analyzer()
@@ -229,7 +231,7 @@ class ThreadPool:
             state_list.remove(worker_thread)
 
 
-# fetch_arr("物业用电动垃圾运输车", True)
+fetch_arr("物业用电动垃圾运输车", True)
 # start = 1
 # offset = 1
 # while start < word_count + offset:
@@ -239,10 +241,10 @@ class ThreadPool:
 #         fetch_arr(keyword)
 #     start = start + offset
 
-total_task = math.ceil(word_count / 100)
-pool = ThreadPool(10, total_task)
-for i in range(0, total_task):
-    pool.put(action, i, callback)
+# total_task = math.ceil(word_count / 100)
+# pool = ThreadPool(10, total_task)
+# for i in range(0, total_task):
+#     pool.put(action, i, callback)
 
 
 

@@ -70,6 +70,58 @@ class Analyzer:
         is_continue = self.is_continue_loop(soup, limit)
         return search_result, is_continue
 
+    def get_result_arr(self, keyword, page, index, limit):
+        soup = BeautifulSoup(page, "html.parser")
+        divs = soup.find_all('div', {'class': 'c-container'})
+        div_i = 1
+        search_result = []
+        for div in divs:
+            link = div.find('a', {'class': 'c-showurl'})
+            if not link:
+                link = div.find('span', {'class': 'c-showurl'})
+            if not link:
+                div_i = div_i + 1
+                continue
+            href = link.get_text()
+            if href.find('cn.made-') != -1:
+                h3 = div.find('h3')
+                url = h3.find('a').get('href')
+                text = h3.get_text()
+                res = requests.get(url=url)
+                # 得到网页原始地址
+                url = res.request.url
+
+                target_page = res.content
+                soup1 = BeautifulSoup(target_page, "html.parser")
+                info = soup1.find('div', {'id': 'hidden_remote_user_info'})
+                if info:
+                    attrs = info.attrs
+                    search_result.append({
+                        "keyword": keyword,
+                        "com_id": attrs['data-comid'],
+                        "username": attrs['data-logusername'],
+                        "com_name": attrs['data-comname'],
+                        "cs_level": attrs['data-cslevel'],
+                        "url": url,
+                        "text": text,
+                        "ranking": (index + div_i)
+                    })
+                else:
+                    search_result.append({
+                        "keyword": keyword,
+                        "com_id": "",
+                        "username": "",
+                        "com_name": "",
+                        "cs_level": "",
+                        "url": url,
+                        "text": text,
+                        "ranking": (index + div_i)
+                    })
+
+            div_i = div_i + 1
+        # is_continue = self.is_continue_loop(soup, limit)
+        return search_result
+
     @staticmethod
     def is_continue_loop(content, limit=5):
         page_div = content.find('div', {'id': 'page'})

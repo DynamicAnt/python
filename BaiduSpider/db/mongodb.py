@@ -71,7 +71,7 @@ class DB:
 
     @staticmethod
     def write_to_link(data):
-        link_col.save(data)
+        link_col.insert_many(data)
 # DB.find("剪叉式液压升降机")
 # DB.find_words(0, 3)
 

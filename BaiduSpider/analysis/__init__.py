@@ -27,7 +27,7 @@ def fetch(keyword):
     # result.console()
 
 
-def fetch_arr(keyword):
+def fetch_arr(keyword, dev=False):
     spider.setKeyword(keyword)
     result = []
     for i in range(0, 5):
@@ -39,7 +39,6 @@ def fetch_arr(keyword):
     if len(result) == 0:
         result.append({
             "keyword": keyword,
-            "com_id": "",
             "username": "",
             "com_name": "",
             "cs_level": "",
@@ -47,8 +46,10 @@ def fetch_arr(keyword):
             "text": "",
             "ranking": 0
         })
-    # print('write to db')
-    db_tool.write_to_link(result)
+    if dev:
+        print(str(result))
+    else:
+        db_tool.write_to_link(result)
     # result.console()
 
 
@@ -228,7 +229,7 @@ class ThreadPool:
             state_list.remove(worker_thread)
 
 
-# fetch("山东淄泵泵业有限公司")
+# fetch_arr("物业用电动垃圾运输车", True)
 # start = 1
 # offset = 1
 # while start < word_count + offset:

@@ -84,6 +84,7 @@ class Analyzer:
                 continue
             href = link.get_text()
             if href.find('cn.made-') != -1:
+                ranking = index + div_i
                 h3 = div.find('h3')
                 url = h3.find('a').get('href')
                 text = h3.get_text()
@@ -98,24 +99,22 @@ class Analyzer:
                     attrs = info.attrs
                     search_result.append({
                         "keyword": keyword,
-                        "com_id": attrs['data-comid'],
                         "username": attrs['data-logusername'],
                         "com_name": attrs['data-comname'],
                         "cs_level": attrs['data-cslevel'],
                         "url": url,
                         "text": text,
-                        "ranking": (index + div_i)
+                        "ranking": ranking
                     })
                 else:
                     search_result.append({
                         "keyword": keyword,
-                        "com_id": "",
                         "username": "",
                         "com_name": "",
                         "cs_level": "",
                         "url": url,
                         "text": text,
-                        "ranking": (index + div_i)
+                        "ranking": ranking
                     })
 
             div_i = div_i + 1

@@ -10,7 +10,7 @@ class BaiduSpider:
         self.page_index = page_index
         self.searchUrl = ""
         self.pageContent = ""
-        self.prefix = "https://www.baidu.com/s"
+        self.prefix = "http://www.baidu.com/s"
         pass
     
     def createUrl(self):
@@ -21,15 +21,9 @@ class BaiduSpider:
         
     def getPageContent(self):
         self.createUrl()
-
-        # response = requests.get(url=self.searchUrl)
-        # self.pageContent = response.content
-
-        page = urllib.request.urlopen(self.searchUrl)
-        html = page.read()
-        self.pageContent = html.decode('utf-8')
-
-        return self.pageContent
+        response = requests.get(url=self.searchUrl)
+        self.pageContent = response.content
+        return self.searchUrl, self.pageContent
     
     def setPageIndex(self, page_index):
         self.page_index = page_index
@@ -75,11 +69,11 @@ class Analyzer:
         is_continue = self.is_continue_loop(soup, limit)
         return search_result, is_continue
 
-    def get_result_arr(self, keyword, page, index, limit):
+    def get_result_arr(self, keyword, search_url, page, index, limit):
         soup = BeautifulSoup(page, "html.parser")
-        print('\n')
-        print(str(soup))
-        print('\n')
+        # print('\n')
+        # print(str(soup))
+        # print('\n')
         divs = soup.find_all('div', {'class': 'c-container'})
         div_i = 1
         search_result = []
@@ -107,22 +101,25 @@ class Analyzer:
                     attrs = info.attrs
                     search_result.append({
                         "keyword": keyword,
+                        "ranking": ranking,
                         "username": attrs['data-logusername'],
                         "com_name": attrs['data-comname'],
                         "cs_level": attrs['data-cslevel'],
+                        "baidu_url": search_url,
                         "url": url,
-                        "text": text,
-                        "ranking": ranking
+                        "text": text
                     })
                 else:
                     search_result.append({
                         "keyword": keyword,
+                        "ranking": ranking,
                         "username": "",
                         "com_name": "",
                         "cs_level": "",
+                        "baidu_url": search_url,
                         "url": url,
                         "text": text,
-                        "ranking": ranking
+
                     })
 
             div_i = div_i + 1

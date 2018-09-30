@@ -4,8 +4,8 @@ import pprint
 import time
 client = MongoClient('mongodb://39.108.153.3:27017/')
 db = client.spider
-collection = db.test
-link_col = db.links
+collection = db.words1
+link_col = db.seo1
 
 
 class DB:

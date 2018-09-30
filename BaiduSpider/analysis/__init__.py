@@ -5,9 +5,8 @@ import math
 import queue
 import threading
 import contextlib
-import ssl
+import time
 
-ssl._create_default_https_context = ssl._create_unverified_context
 db_tool = mongodb.DB()
 word_count = db_tool.get_total_num()
 analyzer = baidu.Analyzer()
@@ -34,19 +33,20 @@ def fetch_arr(keyword, dev=False):
     result = []
     for i in range(0, 5):
         spider.setPageIndex(i * 10)
-        content = spider.getPageContent()
-        temp = analyzer.get_result_arr(keyword, content, i * 10, 5)
+        search_url, content = spider.getPageContent()
+        temp = analyzer.get_result_arr(keyword, search_url, content, i * 10, 5)
         if len(temp) != 0:
             result.extend(temp)
     if len(result) == 0:
         result.append({
             "keyword": keyword,
+            "ranking": 0,
             "username": "",
             "com_name": "",
             "cs_level": "",
+            "baidu_url": "",
             "url": "",
-            "text": "",
-            "ranking": 0
+            "text": ""
         })
     if dev:
         print(str(result))
@@ -231,7 +231,7 @@ class ThreadPool:
             state_list.remove(worker_thread)
 
 
-fetch_arr("物业用电动垃圾运输车", True)
+# fetch_arr("300ml水杯厂家", True)
 # start = 1
 # offset = 1
 # while start < word_count + offset:
@@ -241,10 +241,10 @@ fetch_arr("物业用电动垃圾运输车", True)
 #         fetch_arr(keyword)
 #     start = start + offset
 
-# total_task = math.ceil(word_count / 100)
-# pool = ThreadPool(10, total_task)
-# for i in range(0, total_task):
-#     pool.put(action, i, callback)
+total_task = math.ceil(word_count / 100)
+pool = ThreadPool(10, total_task)
+for i in range(0, total_task):
+    pool.put(action, i, callback)
 
 
 

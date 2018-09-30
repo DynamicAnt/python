@@ -39,15 +39,16 @@ class ExcelUtil:
         return data
 
 
+filename = ""
 startTime = time.clock()
-total = ExcelUtil.get_excel_row_num("2018年到期客户拆词.xlsx") + 1
+total = ExcelUtil.get_excel_row_num(filename) + 1
 db_tool = mongodb.DB()
 offset = 100
 start = 2002
 end = start + offset
 while (end <= total) and (start != end):
     db_startTime = time.clock()
-    words = ExcelUtil.read_from_excel("2018年到期客户拆词.xlsx", start, end)
+    words = ExcelUtil.read_from_excel(filename, start, end)
     db_tool.insert(words)
     print('已处理记录条数：%d' % end)
     start = end

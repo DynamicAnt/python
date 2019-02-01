@@ -1,4 +1,9 @@
 """
+读取excel中的公司信息，根据公司信息抓取用户在百度被收录的链接
+"""
+
+
+"""
 一个基于thread和queue的线程池，以任务为队列元素，动态创建线程，重复利用线程，
 通过close和terminate方法关闭线程池。
 """
@@ -41,8 +46,7 @@ def action(thread_name,company,index,total):
     print("%d 抓取%s公司的seo信息" %(index,company.logUsername))
     linkInfo = fetchRank(company) 
     linkInfo.setCompany(company)
-    
-#     write_to_excel(linkInfo,index)
+
     write_to_file(linkInfo,index)
     print("第%d个任务属于公司%s调用了线程 %s，并打印了这条信息！" % (index, company.logUsername, thread_name))
     if index==total:
@@ -306,11 +310,7 @@ def log(fileName,model,msg):
     file_object = open(fileName, model,encoding='utf-8')
     file_object.write(msg+"\n")
     file_object.close() 
-   
-def creatwb(wbname):  
-    wb=openpyxl.Workbook()
-    wb.save(filename=wbname)
-    print ("新建Excel："+wbname+"成功")
+
 
 def write_to_file(seoInfo,index=0): 
     filename = 'seo.txt'
@@ -325,32 +325,6 @@ def write_to_file(seoInfo,index=0):
         log(filename, 'a', value )
 #     book.close()
     print("%d %s 写入 %s - 成功" %(index,com.logUsername,filename,))
-
-        
-def write_to_excel(seoInfo,index=0): 
-    excel_index = index//500
-    filename = 'links'+str(excel_index)+'.xlsx'
-    sheetname = 'url_title'
-    excelArr = []
-    book = openpyxl.load_workbook(filename)  #打开excel文件   
-    sheet=book[sheetname]
-    
-    com = seoInfo.company
-    for linkInfo in seoInfo.linkInfoList:        
-        excelArr.append([com.logUsername,com.comId,com.comName,linkInfo.urlType,linkInfo.url,linkInfo.baiduTitle,linkInfo.realTitle,len(seoInfo.linkInfoList)])
-    
-    max_row = sheet.max_row
-    roww = 1 + max_row#控制行
-    for info in excelArr:
-        coll = 1#控制列
-        for s in info:#再循环里面list的值，每一列
-            log("access.txt", 'a', "log："+sheetname+"  " +str(max_row)+"  "+str(roww)+"  "+str(coll)+"\n" )
-            sheet.cell(roww,coll,s)
-            coll+=1
-        roww+=1
-    book.save(filename)#保存到当前目录下      
-#     book.close()
-    print("%d %s 写入 %s - %s成功" %(index,com.logUsername,filename,sheetname))
 
 def read_from_excel(filename,startRowNum,endRowNum):
     wb=openpyxl.load_workbook(filename=filename,read_only=True)
@@ -378,34 +352,15 @@ def getExcelRowNum(filename):
     ws=wb.active
     return ws.max_row
 
-def createExcel(num):
-    excel_num = num//500
-    for j in range(0,excel_num):
-        book = openpyxl.Workbook()
-        sheet = book.active
-        sheet.title = 'url_title'
-        title = ['用户名','公司ID','公司名称','链接类型',' 收录链接 ',' 收录词 ' ,'实际title',' 收录数量 ']
-        col = 1#控制列
-        for s in title:#再循环里面list的值，每一列
-            sheet.cell(1,col,s)
-            col+=1
-        book.save('links'+str(j)+'.xlsx')#保存到当前目录下    
-        book.close()
 
-def delExcel():
+def delete_files():
     if os.path.exists('seo.txt'):
         os.remove('seo.txt')
     if os.path.exists('error.txt'):
         os.remove('error.txt')
     if os.path.exists('access.txt'):
         os.remove('access.txt')
-    if os.path.exists('links0.xlsx'):
-        os.remove('links0.xlsx')
-    if os.path.exists('links1.xlsx'):
-        os.remove('links1.xlsx')
-    if os.path.exists('links2.xlsx'):
-        os.remove('links2.xlsx')
-        
+
 def fetchRank(company):
     seoInfo = SeoInfo()
     while(company.hasNext):
@@ -422,13 +377,12 @@ if __name__ == '__main__':
  
     rowNum = getExcelRowNum("company.xlsx")
     print("共用%d条数据。" %(rowNum))
-     
-    delExcel()
-    createExcel(rowNum)
-      
-    startRowNum = 1500
+
+    delete_files()
+
+    startRowNum = 0
 #     rowNum = 1500
-    comInfos = read_from_excel("company.xlsx", startRowNum+1, rowNum+1);
+    comInfos = read_from_excel("company.xlsx", startRowNum+1, rowNum+1)
     # 创建一个最多包含5个线程的线程池
     pool = ThreadPool(20,len(comInfos))
     # 创建100个任务，让线程池进行处理

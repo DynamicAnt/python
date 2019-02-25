@@ -9,6 +9,7 @@ import time
 
 db_tool = mongodb.DB()
 word_count = db_tool.get_total_num()
+print("word_count:",word_count)
 analyzer = baidu.Analyzer()
 spider = baidu.BaiduSpider()
 
@@ -232,19 +233,20 @@ class ThreadPool:
 
 
 # fetch_arr("300ml水杯厂家", True)
-# start = 1
-# offset = 1
-# while start < word_count + offset:
-#     words = db_tool.find_words(start, offset)
-#     print("index:%d keyword:%s" % (start, str(words)))
-#     for keyword in words:
-#         fetch_arr(keyword)
-#     start = start + offset
+start = 1
+offset = 1
+while start < word_count + offset:
+    words = db_tool.find_words(start, offset)
+    print("index:%d keyword:%s" % (start, str(words)))
+    for keyword in words:
+        fetch_arr(keyword)
+    start = start + offset
 
-total_task = math.ceil(word_count / 100)
-pool = ThreadPool(10, total_task)
-for i in range(0, total_task):
-    pool.put(action, i, callback)
+# total_task = math.ceil(word_count / 100)
+# pool = ThreadPool(1, total_task)
+# for i in range(2343, total_task):
+#     pool.put(action, i, callback)
+
 
 
 

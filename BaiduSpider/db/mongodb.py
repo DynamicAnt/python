@@ -4,7 +4,7 @@ import pprint
 import time
 client = MongoClient('mongodb://39.108.153.3:27017/')
 db = client.spider
-collection = db.words1
+collection = db.word1
 link_col = db.seo1
 
 
@@ -51,7 +51,7 @@ class DB:
 
     @staticmethod
     def find_words(start=0, offset=0):
-        result = collection.find({"w_id": {"$gte": start}}).limit(offset)
+        result = collection.find({"id": {"$gte": start}}).limit(offset)
         words = []
         for rst in result:
             words.append(rst["word"])

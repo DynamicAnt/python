@@ -71,21 +71,28 @@ class Analyzer:
 
     def get_result_arr(self, keyword, search_url, page, index, limit):
         soup = BeautifulSoup(page, "html.parser")
-        # print('\n')
-        # print(str(soup))
-        # print('\n')
         divs = soup.find_all('div', {'class': 'c-container'})
         div_i = 1
         search_result = []
         for div in divs:
+            href = ""
+            ranking = 0
+            h3 = None
+            url = ""
+            text = ""
+            attrs = None
             link = div.find('a', {'class': 'c-showurl'})
             if not link:
                 link = div.find('span', {'class': 'c-showurl'})
             if not link:
                 div_i = div_i + 1
                 continue
-            href = link.get_text()
-            if href.find('cn.made-') != -1:
+            span = link.find('span')
+            if span:
+                href = span.get_text()
+            else:
+                href = link.get_text()
+            if href.find('cn.made-') != -1 or href == "中国制造网":
                 ranking = index + div_i
                 h3 = div.find('h3')
                 url = h3.find('a').get('href')
